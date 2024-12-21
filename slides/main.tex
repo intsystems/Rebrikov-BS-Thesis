@@ -46,13 +46,14 @@
 
 \captionsetup[subfloat]{labelformat=empty}
 
+
 %----------------------------------------------------------------------------------------------------------
 
-\title[Пример слайдов по работе]{Пример слайдов по работе \\ курса}
-\author{И.\,О.\,Фамилия}
+\title[Исследование механизмов разрежения нейронных сетей на основе важностей весов]{Исследование механизмов разрежения нейронных сетей на основе важностей весов \\ НИР}
+\author{А.\,В.\,Ребриков \\ Научный руководитель:	к.ф.-м.н., Безносиков А. Н.}
 
 \institute[]{Московский физико-технический институт}
-\date[2022]{\small 10\;февраля\;2022\,г.}
+\date[2024]{\small 21\;декабря\;2024\,г.}
 
 %---------------------------------------------------------------------------------------------------------
 \begin{document}
@@ -62,103 +63,149 @@
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
+
+
+\section{Литература}
+\begin{frame}{Литература}
+\bibliographystyle{plain}
+\bibliography{../paper/references}
+\end{frame}
+%----------------------------------------------------------------------------------------------------------
+
+
 \section{Слайд об исследованиях}
 \begin{frame}{Слайд об исследованиях}
 \bigskip
-Исследуется проблема \ldots.
+Исследуется проблема регуляризации нейронных сетей засчёт рязрежения, например с помощью dropout, dropconnect.
 \begin{block}{Цель исследования~---}
-предложить метод \ldots.
+предложить метод разрежения нейронных сетей на основе \emph{важности} весов.
 \end{block}
-\begin{block}{Требуется предложить}
+\begin{block}{Прелагается}
 \justifying
 \begin{enumerate}[1)]
-\item метод \ldots,
-\item метод \ldots,
-\item метод \ldots.
+\item определить \emph{важность} весов,
+\item рязряжение с вероятностями, зависящими от важности весов,
+\item комбинация с известными методами разрежения для получения лучших результатов.
 \end{enumerate}
 \end{block}
 \begin{block}{Решение}
-Для \ldots.
+Для определения важности весов предлагается исследовать влияние изменения каждого отдельного веса в рамках одного слоя (параметра) сети на функцию ошибки.
 \end{block}
 \end{frame}
 
 %---------------------------------------------------------------------------------------------------------
-\section{Постановка задачи \ldots}
-\begin{frame}{Постановка задачи \ldots}
+\section{Постановка задачи регуляризации}
+\begin{frame}{Постановка задачи регуляризации}
 Заданы
 \begin{enumerate}[1)]
-    \item признаки \ldots,
-    \item целевая переменная \ldots,
-    \item \ldots.
+    \item признаки $a_\text{train}, a_\text{test} \in A^{n+m}$, метки $b_\text{train}, b_\text{test} \in B^{n+m} = \mathbb{R}^{r \times (n+m)}$,
+    \item веса модели: $x \in X = X_1 \times X_2 \times \ldots \times X_L$,
+    \item модель $f: X \times A \to B$,
+    \item функция ошибки $\mathcal{L}: X \to \mathbb{R}$.
+    % \item важность весов: $w \in W = W_1 \times W_2 \times \ldots \times W_L$, 
+    % $\forall i \in \overline{1, L} \quad W_i = \Delta_{\dim X_i}$.
 \end{enumerate}
 
-\ldots
-
 \bigskip
 
-Требуется выбрать модель \ldots из множества
+При классической постановке задачи: 
 \[
-	\mathfrak{G} = \left\{\mathbf{g}| \mathbf{g}:\mathbb{R}^{n} \to \mathbb{Y}^\prime\right\}.
+	\frac{1}{n} \sum_{i=1}^{n} \mathcal{L}(f(x, a_\text{train}^i), b_\text{train}^i) \to \min_{x \in X}
 \]
-Оптимизационная задача \ldots:
-\[
-	\mathbf{g} = \arg\min_{\mathbf{g} \in \mathfrak{G}} \mathcal{L}\bigr(\ldots\bigl),
-\]
-где $\mathcal{L}$~--- функция ошибки.
 
+Где решение ищется с помощью градиентного спуска.
 \bigskip
-\footnotetext[1]{\textit{Lopez-Paz D., Bottou L., Scholkopf B., Vapnik V.} Unifying distillation and privileged information // ICLR, 2016.}
-\footnotetext[2]{\textit{Hinton G., Vinyals O., Dean J.} Distilling the knowledge in a neural network // NIPS, 2015.}
+
+Дополнительно хотим минимизировать разность с тестовой выборкой:
+
+\[
+    \text{GAP} = \frac{1}{n} \sum_{i=1}^{n} \mathcal{L}(f(x, a_\text{test}^i), b_\text{test}^i) - \frac{1}{m} \sum_{i=1}^{m} \mathcal{L}(f(x, a_\text{train}^i), b_\text{train}^i)
+\]
+
+% \bigskip
+% \footnotetext[1]{\textit{Lopez-Paz D., Bottou L., Scholkopf B., Vapnik V.} Unifying distillation and privileged information // ICLR, 2016.}
+% \footnotetext[2]{\textit{Hinton G., Vinyals O., Dean J.} Distilling the knowledge in a neural network // NIPS, 2015.}
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\section{Предложенный метод \ldots}
-\begin{frame}{Предложенный метод \ldots}
+\section{Предложенный метод важности весов}
+\begin{frame}{Предложенный метод важности весов}
 ~\\[-1mm]
 Заданы
 \begin{enumerate}[1)]
-	\item \ldots,
-	\item \ldots.
+    \item признаки $a_\text{train}, a_\text{test} \in A^{n+m}$, метки $b_\text{train}, b_\text{test} \in B^{n+m} = \mathbb{R}^{r \times (n+m)}$,
+    \item веса модели: $x \in X = X_1 \times X_2 \times \ldots \times X_L$,
+    \item модель $f: X \times A \to B$,
+    \item функция ошибки $\mathcal{L}: X \to \mathbb{R}$,
+    \item важность весов: $w \in W = W_1 \times W_2 \times \ldots \times W_L$, $ W_i = |\dim X_i |\Delta_{\dim X_i}$.
 \end{enumerate}
 
-\medskip
-Параметрические семейства:
-\[
-\setlength\abovedisplayskip{0pt}
-\mathfrak{F} = \left\{\mathbf{f}| \mathbf{f} = \text{softmax}\bigr(\mathbf{v}\bigr(\mathbf{x}\bigl)/T\bigl), \quad \mathbf{v}: \mathbb{R}^{n} \to \mathbb{R}^K \right\},
-\]
-\[
-\mathfrak{G} = \left\{\mathbf{g}| \mathbf{g} = \text{softmax}\bigr(\mathbf{z}\bigr(\mathbf{x}\bigl)/T\bigl), \quad \mathbf{z}: \mathbb{R}^n \to \mathbb{R}^K \right\},
-\]
-где~\ldots.
+\bigskip
 
-\medskip
-Функция ошибки
+Поиск важности весов
 \[
-\setlength\abovedisplayskip{0pt}
-\begin{aligned}
-   \mathcal{L}\bigr(\mathbf{g}\bigl) = &-\sum_{i=1}^{m}\underbrace{{\sum_{k=1}^{K}y^k_i\log\mathbf{g}\bigr(\mathbf{x}_i\bigl)\bigr|_{T=1}}}_{\text{исходная функция потерь}}- \sum_{i=1}^{m}\underbrace{{\sum_{k=1}^{K}\mathbf{f}\bigr(\mathbf{x}_i\bigl)\bigr|_{T=T_0}\log\mathbf{g}\bigr(\mathbf{x}_i\bigl)\bigr|_{T=T_0}}}_{\text{слагаемое дистилляции}},
-\end{aligned}
-\setlength\belowdisplayskip{0pt}
+	\mathcal{L}(f(x -  w \odot (\gamma \nabla f), a_\text{train}^i), b_\text{train}^i) \to \min_{w \in W}
 \]
-где~\ldots.
+где $\gamma$ -- шаг градиентного спуска.
 
-Оптимальная модель выбирается из класса,
-$\hat{\mathbf{g}} = \arg\min\limits_{\mathbf{g} \in \mathfrak{G}_{\text{cl}}} \mathcal{L}\bigr(\mathbf{g}\bigl).$
+\bigskip
+
+Далее проводится dropconnect с вероятностями, зависящими от важности весов.
+
+\cite{keshari2019guided}
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\section{Анализ предложенного метода \ldots}
-\begin{frame}{Анализ предложенного метода \ldots}
+\section{Описание предложенного метода}
+\begin{frame}{Описание предложенного метода}
+\justifying
+\begin{itemize}
+\item Исследовался процесс, при котором полученные важности означали вероятность сохранения веса при dropconnect. Можно рассмотреть и другие варианты, например, наоборот, вероятность удаления веса (с надлежащим нормированием).
+\item Для решения задачи поиска важности весов используется зеркальный спуск на симплексе. В качестве регуляризации используется KL-дивергенция с равномерным распределением.
+\item  Эксперименты проводились на задачах классификации изображений CIFAR-10 с помощью RESNET-18.
+\end{itemize}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------------------------
+\section{Эксперименты}
+\begin{frame}{Эксперименты}
 \justifying
 
-На графике показана зависимость значения параметров$w_i$ в зависимости от параметра~$l_1$-регуляризации~$C$.
-% \begin{figure}[h!]
-% \includegraphics[width=0.45\textwidth]{../figures/log_reg_cs_exp.eps}
-% \includegraphics[width=0.45\textwidth]{../figures/log_reg_cs_exp.eps}
-% \end{figure}
+С применением регуляризации мы получаем более информативную гистограмму. Иначе зеркальный спуск сходится к вырожденному решению (выбор одного веса)
 
-С увеличением параметра регуляризации~$C$ число ненулевых параметров~$w_i$ уменьшается.
+Для понимания гистограммы: в случае равномерного распределения все value равны единице, в случае вырожденного -- все value равны нулю, кроме одного.
+
+Мы же стремимся к тому, чтобы выявить группу более важных весов.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{../figures/impacts.jpeg}
+\caption{Гистограмма важности веса (value)}
+\end{figure}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------------------------
+\section{Эксперименты}
+\begin{frame}{Эксперименты}
+\justifying
+
+Сравнивались 
+\begin{itemize}
+\item классическое обучение модели (baseline), 
+\item обучение с dropconnect на основе важности весов (impacts),
+\item обучение с dropconnect на основе важности весов, но используя регуляризацию с равномерным распределением (impacts+regularization),
+\item обучение с классическим dropconnect (dropconnect).
+\end{itemize}
+В последних трёх пунктах количество весов, которые не использовались, было одинаковым.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{../figures/exp.png}
+\caption{Графики сходимости}
+\end{figure}
 
 \end{frame}
 
@@ -166,26 +213,21 @@ $\hat{\mathbf{g}} = \arg\min\limits_{\mathbf{g} \in \mathfrak{G}_{\text{cl}}} \m
 \section{Выводы}
 \begin{frame}{Выводы}
 \justifying
+На текущий момент:
 	\begin{enumerate}
 	\justifying
-	    \item Предложен \ldots.
-        \item Доказаны теоремы \ldots, 
-        \begin{itemize}
-            \item[---] \ldots,
-            \item[---] \ldots.
-        \end{itemize}
-        \item Предложен метод \ldots
-        \begin{itemize}
-            \item[---] \ldots,
-            \item[---] \ldots.
-        \end{itemize}
-        \item Предложены методы \ldots
-        \begin{itemize}
-            \item[---] \ldots,
-            \item[---] \ldots.
-        \end{itemize}
-        \item Предложена вероятностная интерпретации \ldots.
+        \item Предложен метод определения важности весов, основанный на зеркальном спуске на симплексе.
+        \item Предложен метод регуляризации нейронных сетей: dropconnect на основе важности весов.
+        \item Экспериментально показано, что предложенный метод позволяет получить лучшие результаты по сравнению с классическим dropconnect (на ранних этапах обучения).
 	\end{enumerate}
+
+\bigskip
+
+В будущем:
+\begin{enumerate}
+\item Исследовать метод на поздних этапах обучения.
+\item Исследовать другие подходы к разрежению на основе важности.
+\end{enumerate}
 \end{frame}
 %----------------------------------------------------------------------------------------------------------
 
