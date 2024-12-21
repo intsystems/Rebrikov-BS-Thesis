@@ -13,146 +13,165 @@
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{doi}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
 
+\title{Исследование механизмов разрежения нейронных сетей на основе важностей весов}
 
-
-\title{A template for the \emph{arxiv} style}
-
-\author{ David S.~Hippocampus\thanks{Use footnote for providing further
-		information about author (webpage, alternative
-		address)---\emph{not} for acknowledging funding agencies.} \\
-	Department of Computer Science\\
-	Cranberry-Lemon University\\
-	Pittsburgh, PA 15213 \\
-	\texttt{hippo@cs.cranberry-lemon.edu} \\
-	%% examples of more authors
-	\And
-	Elias D.~Striatum \\
-	Department of Electrical Engineering\\
-	Mount-Sheikh University\\
-	Santa Narimana, Levand \\
-	\texttt{stariate@ee.mount-sheikh.edu} \\
-	%% \AND
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
+\author{%
+  А.\,В.~Ребриков\thanks{Данная работа выполнена в рамках научно-исследовательской работы (НИР) в Московском физико-техническом институте.}\\
+  Физтех-школа прикладной математики и информатики\\
+  Московский физико-технический институт (МФТИ)\\
+  \texttt{rebryakov.av@phystech.edu} \\
+  \And
+  А.\,Н.~Безносиков\thanks{Научный руководитель.}\\
+  Московский физико-технический институт (МФТИ)\\
+  \texttt{beznosikov.an@phystech.edu}
 }
 \date{}
 
-\renewcommand{\shorttitle}{\textit{arXiv} Template}
+\renewcommand{\shorttitle}{Разрежение нейронных сетей на основе важностей весов}
 
-%%% Add PDF metadata to help others organize their library
-%%% Once the PDF is generated, you can check the metadata with
-%%% $ pdfinfo template.pdf
 \hypersetup{
-pdftitle={A template for the arxiv style},
-pdfsubject={q-bio.NC, q-bio.QM},
-pdfauthor={David S.~Hippocampus, Elias D.~Striatum},
-pdfkeywords={First keyword, Second keyword, More},
+pdftitle={Исследование механизмов разрежения нейронных сетей на основе важностей весов},
+pdfsubject={Разрежение, нейронные сети, DropConnect, важность весов},
+pdfauthor={А. В. Ребриков, А. Н. Безносиков},
+pdfkeywords={Разрежение, Нейронные сети, DropConnect, Важность весов, Зеркальный спуск, Регуляризация},
 }
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-	\lipsum[1]
+В данной работе рассматривается задача регуляризации нейронных сетей путём их разрежения. Традиционные методы, такие как Dropout и DropConnect, «выключают» часть весов случайно, что помогает бороться с переобучением. Мы предлагаем иной подход к определению вероятности выключения весов, основываясь на их \textit{важности} --- оценке вклада конкретных параметров в итоговую функцию ошибки. Эксперименты с ResNet-18 на задаче классификации изображений CIFAR-10 показывают преимущество предлагаемых идей на ранних этапах обучения.
 \end{abstract}
 
+\keywords{Разрежение \and Нейронные сети \and DropConnect \and Важность весов \and Регуляризация }
 
-\keywords{First keyword \and Second keyword \and More}
+\section{Введение}
+В последние годы глубокие нейронные сети достигли значительного прогресса в решении сложных задач компьютерного зрения, обработки естественного языка и многих других областей. Однако большим практическим вызовом остаётся проблема переобучения, а также избыточное количество параметров, которое делает модели ресурсоёмкими и сложными для интерпретации.
 
-\section{Introduction}
-\lipsum[2]
-\lipsum[3]
+Одним из наиболее известных подходов к сдерживанию переобучения является метод \textit{Dropout}~\citep{srivastava2014dropout}, при котором случайным образом «обнуляются» некоторые нейроны на стадии обучения. Аналогичным образом в \textit{DropConnect}~\citep{wan2013regularization} «обнуляются» отдельные веса. Как правило, вероятность зануления задаётся глобально и не учитывает особенности и вклад отдельных весов.
 
-\section{Headings: first level}
-\label{sec:headings}
+С другой стороны, в последнее время появилось множество работ, исследующих механизмы разрежения нейронных сетей, основанные на важности весов. Например, в работе~\citep{keshari2019guided} предлагается использовать <<силу нейронов>>, т.\,е. оценку их вклада в функцию ошибки, и обучать только наименее сильные.
 
-\lipsum[4] See Section \ref{sec:headings}.
+В данной работе мы предлагаем метод разрежения, использующий \textit{важность} весов, т.\,е. оценку их вклада в функцию ошибки. Для определения важности предлагается зеркальный спуск по соответствующему симплексу для каждого параметра, с дополнительной регуляризацией, препятствующей вырождению в пользу одного веса.
 
-\subsection{Headings: second level}
-\lipsum[5]
+\section{Постановка задачи}
+\label{sec:problem}
+
+Рассмотрим задачу обучения нейронной сети на выборке:
+\begin{enumerate}
+    \item Дано $n$ обучающих примеров $(a_{\text{train}}^i, b_{\text{train}}^i)$, а также $m$ тестовых примеров $(a_{\text{test}}^i, b_{\text{test}}^i)$.
+    \item Пусть $x \in X = X_1 \times \dots \times X_L$ --- совокупность весов сети (все слои).
+    \item Модель $f(x,a)\colon X \times A \to B$ возвращает результат (например, вектор вероятностей классов).
+    \item Функция ошибки $\mathcal{L}(f(x,a^i),b^i)$ суммируется по всем объектам обучающей выборки.
+\end{enumerate}
+
+Традиционная постановка задачи обучения нейронной сети:
 \begin{equation}
-	\xi _{ij}(t)=P(x_{t}=i,x_{t+1}=j|y,v,w;\theta)= {\frac {\alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}{\sum _{i=1}^{N} \sum _{j=1}^{N} \alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}}
+    \frac{1}{n} \sum_{i=1}^{n} \mathcal{L}(f(x, a_{\text{train}}^i), b_{\text{train}}^i) \;\to\; \min_{x \in X}.
 \end{equation}
 
-\subsubsection{Headings: third level}
-\lipsum[6]
+При этом нас дополнительно интересует «обобщающая способность», измеряемая \textit{разностью} качества между тестовой и обучающей выборками (GAP):
+\begin{equation}
+    \text{GAP} \;=\; \frac{1}{m} \sum_{i=1}^{m} \mathcal{L}\bigl(f(x, a_{\text{test}}^i), b_{\text{test}}^i\bigr)
+    \;-\;
+    \frac{1}{n} \sum_{i=1}^{n} \mathcal{L}\bigl(f(x, a_{\text{train}}^i), b_{\text{train}}^i\bigr).
+\end{equation}
 
-\paragraph{Paragraph}
-\lipsum[7]
+Целью регуляризации служит снижение риска переобучения, то есть уменьшение величины GAP.
 
+\section{Определение важности весов и разрежение}
+\label{sec:importance}
 
+Для построения механизма разрежения на основе \textit{важности} весов необходимо:
+\begin{enumerate}
+    \item Определить меру важности для каждого веса $x_i$.
+    \item На основе этой меры задавать вероятности «включения» (или «выключения») весов при DropConnect.
+    \item В случае необходимости сочетать полученную схему с классическим \textit{DropConnect} или другими известными техниками.
+\end{enumerate}
 
-\section{Examples of citations, figures, tables, references}
-\label{sec:others}
+\subsection{Зеркальный спуск на симплексе}
+В работе предлагается найти распределение важности $w$ размерности, совпадающей с количеством весов. Для этого решается задача:
+\begin{equation}
+    \mathcal{L}\bigl(f(x - w \odot (\gamma \nabla f(x)), a_{\text{train}}), b_{\text{train}}\bigr)
+    \;\to\; \min_{w}, 
+\end{equation}
+где $w$ лежит на соответствующем симплексе, умноженном на количество весов, $\gamma$ --- параметр «шага». Решение реализуется методом зеркального спуска с регуляризацией в виде KL-дивергенции:
+\begin{equation}
+    R(w) \;=\; \mathrm{KL}(w \,\|\, \boldsymbol{u}),
+\end{equation}
+где $\boldsymbol{u}$ --- равномерное распределение (в данном случае, все компоненты равны $1$). Это препятствует «вырождению» в пользу одного веса, одновременно позволяя различать важные и менее важные веса.
 
-\subsection{Citations}
-Citations use \verb+natbib+. The documentation may be found at
-\begin{center}
-	\url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
+\section{Применение DropConnect на основе важности}
+\label{sec:dropconnect}
 
-Here is an example usage of the two main commands (\verb+citet+ and \verb+citep+): Some people thought a thing \citep{kour2014real, hadash2018estimate} but other people thought something else \citep{kour2014fast}. Many people have speculated that if we knew exactly why \citet{kour2014fast} thought this\dots
+\textit{DropConnect}~\citep{wan2013regularization} предполагает, что в процессе обучения каждая компонента $x_i$ (вес сети) «выключается» с некоторой вероятностью $p$. Мы же можем задать это $p$ как функцию от найденной важности $w_i$. Например,
+\[
+    p_i = 1 - \alpha \, w_i \quad \text{(или наоборот } p_i = \alpha \, w_i \text{)}, 
+\]
+где $\alpha$ --- параметр, задающий уровень разрежения.
 
-\subsection{Figures}
-\lipsum[10]
-See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
-\lipsum[11]
+Далее обучения сети проходит с учётом того, что веса выбираются случайно в соответствии с вероятностями $p_i$.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{../figures/log_reg_cs_exp.eps}
-	\caption{Sample figure caption.}
-	\label{fig:fig1}
-\end{figure}
+\section{Эксперименты}
+\label{sec:experiments}
 
-\subsection{Tables}
-See awesome Table~\ref{tab:table}.
-
-The documentation for \verb+booktabs+ (`Publication quality tables in LaTeX') is available from:
-\begin{center}
-	\url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-
-
-\begin{table}
-	\caption{Sample table title}
-	\centering
-	\begin{tabular}{lll}
-		\toprule
-		\multicolumn{2}{c}{Part}                   \\
-		\cmidrule(r){1-2}
-		Name     & Description     & Size ($\mu$m) \\
-		\midrule
-		Dendrite & Input terminal  & $\sim$100     \\
-		Axon     & Output terminal & $\sim$10      \\
-		Soma     & Cell body       & up to $10^6$  \\
-		\bottomrule
-	\end{tabular}
-	\label{tab:table}
-\end{table}
-
-\subsection{Lists}
+\subsection{Настройка экспериментов}
+Эксперименты проводились на датасете CIFAR-10 с помощью архитектуры ResNet-18. Рассматривались следующие методы:
 \begin{itemize}
-	\item Lorem ipsum dolor sit amet
-	\item consectetur adipiscing elit.
-	\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
+    \item \textbf{baseline:} обучение без разрежения;
+    \item \textbf{impacts:} обучение с DropConnect, где вероятность задаётся на основе важностей весов;
+    \item \textbf{impacts+regularization:} то же, что impacts, но с дополнительной регуляризацией KL-дивергенции, препятствующей вырождению распределения важности;
+    \item \textbf{dropconnect:} классический DropConnect с фиксированной вероятностью выключения.
 \end{itemize}
 
+Во всех трёх вариантах с разрежением старались «выключать» одинаковое количество весов, чтобы иметь сопоставимые условия.
+
+\subsection{Результаты}
+На Рисунке~\ref{fig:hist} показаны гистограммы важных весов с регуляризацией. При отсутствии регуляризации наблюдалось «выделение» единственного веса с максимальной важностью, что приводило к вырожденной ситуации. С KL-регуляризацией распределение более плавное, сохраняя «группу» наиболее важных весов.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figures/impacts.jpeg}
+    \caption{Гистограммы важностей весов с регуляризацией.}
+    \label{fig:hist}
+\end{figure}
+
+На Рисунке~\ref{fig:exp} представлены графики обучения (точность на валидации и ошибка), показывающие, что на ранних этапах метод impacts+regularization даёт лучший результат по сравнению с классическим DropConnect.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../figures/exp.png}
+    \caption{Сходимость на ранних эпохах обучения ResNet-18 с разрежением в вариантах baseline, dropconnect, impacts и impacts+regularization.}
+    \label{fig:exp}
+\end{figure}
+
+\section{Выводы и дальнейшие исследования}
+\label{sec:conclusion}
+
+В работе представлен новый подход к регуляризации нейронных сетей, основанный на вычислении важности весов и применении DropConnect с вероятностями, зависящими от важности. Эксперименты показали преимущество такого подхода на ранних этапах обучения по сравнению с классическими методами.
+
+\textbf{Основные результаты:}
+\begin{enumerate}
+    \item Предложен метод определения важности весов с помощью зеркального спуска на симплексе и KL-регуляризации.
+    \item Показано, что основанный на важностях метод DropConnect даёт более высокое качество в начальной фазе обучения.
+    \item Сохранение «небольшой группы важных весов» выглядит более разумным, чем равномерное вероятностное выключение всех весов.
+\end{enumerate}
+
+\textbf{Перспективы:}
+\begin{itemize}
+    \item Исследовать устойчивость и поведение предлагаемого подхода на поздних этапах обучения.
+    \item Рассмотреть комбинирование с другими методами разрежения, включая различные эвристики пороговых значений весов, L1-регуляризацию и т.\,д.
+    \item Применение на более сложных архитектурах и задачах .
+\end{itemize}
+
+\section*{Благодарности}
+Авторы благодарят МФТИ за предоставленную вычислительную инфраструктуру и поддержку исследований.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}
+\nocite{*}
 
 \end{document}
