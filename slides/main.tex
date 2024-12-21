@@ -102,7 +102,7 @@
 \]
 Оптимизационная задача \ldots:
 \[
-	\mathbf{g} = \arg\min_{\mathbf{g} \in \mathfrak{G}} \mathcal{L}\bigr(\ldots\bigr),
+	\mathbf{g} = \arg\min_{\mathbf{g} \in \mathfrak{G}} \mathcal{L}\bigr(\ldots\bigl),
 \]
 где $\mathcal{L}$~--- функция ошибки.
 
@@ -125,10 +125,10 @@
 Параметрические семейства:
 \[
 \setlength\abovedisplayskip{0pt}
-\mathfrak{F} = \left\{\mathbf{f}| \mathbf{f} = \text{softmax}\bigr(\mathbf{v}\bigr(\mathbf{x}\bigr)/T\bigr), \quad \mathbf{v}: \mathbb{R}^{n} \to \mathbb{R}^K \right\},
+\mathfrak{F} = \left\{\mathbf{f}| \mathbf{f} = \text{softmax}\bigr(\mathbf{v}\bigr(\mathbf{x}\bigl)/T\bigl), \quad \mathbf{v}: \mathbb{R}^{n} \to \mathbb{R}^K \right\},
 \]
 \[
-\mathfrak{G} = \left\{\mathbf{g}| \mathbf{g} = \text{softmax}\bigr(\mathbf{z}\bigr(\mathbf{x}\bigr)/T\bigr), \quad \mathbf{z}: \mathbb{R}^n \to \mathbb{R}^K \right\},
+\mathfrak{G} = \left\{\mathbf{g}| \mathbf{g} = \text{softmax}\bigr(\mathbf{z}\bigr(\mathbf{x}\bigl)/T\bigl), \quad \mathbf{z}: \mathbb{R}^n \to \mathbb{R}^K \right\},
 \]
 где~\ldots.
 
@@ -137,14 +137,14 @@
 \[
 \setlength\abovedisplayskip{0pt}
 \begin{aligned}
-   \mathcal{L}\bigr(\mathbf{g}\bigr) = &-\sum_{i=1}^{m}\underbrace{{\sum_{k=1}^{K}y^k_i\log\mathbf{g}\bigr(\mathbf{x}_i\bigr)\bigr|_{T=1}}}_{\text{исходная функция потерь}}- \sum_{i=1}^{m}\underbrace{{\sum_{k=1}^{K}\mathbf{f}\bigr(\mathbf{x}_i\bigr)\bigr|_{T=T_0}\log\mathbf{g}\bigr(\mathbf{x}_i\bigr)\bigr|_{T=T_0}}}_{\text{слагаемое дистилляции}},
+   \mathcal{L}\bigr(\mathbf{g}\bigl) = &-\sum_{i=1}^{m}\underbrace{{\sum_{k=1}^{K}y^k_i\log\mathbf{g}\bigr(\mathbf{x}_i\bigl)\bigr|_{T=1}}}_{\text{исходная функция потерь}}- \sum_{i=1}^{m}\underbrace{{\sum_{k=1}^{K}\mathbf{f}\bigr(\mathbf{x}_i\bigl)\bigr|_{T=T_0}\log\mathbf{g}\bigr(\mathbf{x}_i\bigl)\bigr|_{T=T_0}}}_{\text{слагаемое дистилляции}},
 \end{aligned}
 \setlength\belowdisplayskip{0pt}
 \]
 где~\ldots.
 
 Оптимальная модель выбирается из класса,
-$\hat{\mathbf{g}} = \arg\min\limits_{\mathbf{g} \in \mathfrak{G}_{\text{cl}}} \mathcal{L}\bigr(\mathbf{g}\bigr).$
+$\hat{\mathbf{g}} = \arg\min\limits_{\mathbf{g} \in \mathfrak{G}_{\text{cl}}} \mathcal{L}\bigr(\mathbf{g}\bigl).$
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
@@ -153,10 +153,10 @@ $\hat{\mathbf{g}} = \arg\min\limits_{\mathbf{g} \in \mathfrak{G}_{\text{cl}}} \m
 \justifying
 
 На графике показана зависимость значения параметров$w_i$ в зависимости от параметра~$l_1$-регуляризации~$C$.
-\begin{figure}[h!]
-\includegraphics[width=0.45\textwidth]{../figures/log_reg_cs_exp.eps}
-\includegraphics[width=0.45\textwidth]{../figures/log_reg_cs_exp.eps}
-\end{figure}
+% \begin{figure}[h!]
+% \includegraphics[width=0.45\textwidth]{../figures/log_reg_cs_exp.eps}
+% \includegraphics[width=0.45\textwidth]{../figures/log_reg_cs_exp.eps}
+% \end{figure}
 
 С увеличением параметра регуляризации~$C$ число ненулевых параметров~$w_i$ уменьшается.
 
