@@ -1,0 +1,15 @@
+\section*{Приложение}
+\addcontentsline{toc}{section}{Приложение}
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+
+\section{Основные неравенства}\label{sec:basicineq}
+В этом разделе приводятся неравенства, используемые в дальнейшем. Пусть функция $f$ удовлетворяет Предположению~\ref{ass:smoothness}, а функция $g$~---  Предположению~\ref{ass:strongconvex}. Тогда для любых векторов $x, y, \{x_i\}\in\mathbb{R}^d$ и положительных скаляров $\alpha, \beta$ выполняются следующие неравенства:
+\begin{align}
+\label{ineq3} \tag{Скалярное} 2\langle x, y \rangle & \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2, \\
+\label{ineq:norm} \tag{Норма} 2\langle x, y \rangle & = \|x + y\|^2 - \|x\|^2 - \|y\|^2, \\
+\label{ineq:square} \tag{Квадратичное} \|x + y\|^2 & \leqslant (1 + \beta)\|x\|^2 + \left(1 + \frac{1}{\beta}\right)\|y\|^2, \\
+\label{ineq4} \tag{Липшицево} f(x) & \leqslant f(y) + \langle \nabla f(y), x-y \rangle + \frac{L}{2} \|x-y\|^2,\\
+\label{ineq1} \tag{Коши–Буняковский}  \left\|\sum_{i=1}^{n} x_i\right\|^2 & \leqslant  n \sum_{i=1}^{n} \|x_i\|^2, \\
+\label{PL} \tag{PL-условие}  g(x) - \inf g  &\leqslant \frac{1}{2\mu} \|\nabla g(x)\|^2.
+\end{align}
+Неравенство \eqref{ineq4} получено в книге~\citep{nesterov2018lectures}, Теорема 2.1.5.

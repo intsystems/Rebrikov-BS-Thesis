@@ -1,0 +1,83 @@
+\section{Основные результаты}\label{sec:main}
+
+\subsection{Аппроксимация полного градиента}\label{subsection:gradientapprox}
+
+В данном разделе представлена эвристика, основанная на перемешивании выборки и идеях \textsc{SAG/SAGA}, позволяющая аппроксимировать полный градиент без необходимости хранения всех предыдущих значений градиентов. Алгоритм \textsc{SAG} был одним из первых методов, направленных на ускорение стохастического градиентного спуска за счёт уменьшения дисперсии обновлений. В \textsc{SAG} обновление имеет вид:
+\begin{align}\label{eq:sag}
+    &\textstyle{x^{t+1} = x^t - \frac{\gamma}{n} \left( \nabla f_{i_t}(x^t) - \nabla f_{i_t}(\phi_{i_t}^t) +  \sum\limits_{j=1}^n \nabla f_j(\phi_j^t) \right),}
+\end{align}
+где \(\phi_j^t\) — точка, в которой ранее был вычислен градиент функции \(f_j\). В данном подходе на каждом шаге обновляется один из элементов суммы, что снижает дисперсию оценки градиента.
+
+При случайной выборке \(i_t\) в \textsc{SAG} сложно отследить, когда последний раз обновлялся градиент для конкретного индекса. Однако при использовании перемешивания (shuffling) известно, что в течение эпохи все градиенты \(\nabla f_j\) будут вычислены. Таким образом, в начале каждой эпохи возможна точная аппроксимация полного градиента:
+\begin{align} \label{eq:withoutfullgrad}
+    &\textstyle{v_{s+1} = \frac{1}{n} \sum\limits_{t=1}^n \nabla f_{\pi_s^t}(x_s^t),}
+\end{align}
+где \(\pi_s^t\) — перестановка индексов после перемешивания в начале эпохи \(s\). При этом расчёт может быть реализован через скользящее среднее без дополнительных затрат памяти:
+\begin{align}
+\label{eq:withoutfullgradmovingaverage}
+\begin{split}
+    \textstyle{\widetilde{v}_s^{t+1}} = \textstyle{\frac{t}{t+1} \widetilde{v}_s^{t} + \frac{1}{t+1} \nabla f_{\pi_s^t}(x_s^t), \quad v_{s+1} = \widetilde{v}_s^n.}
+\end{split}
+\end{align}
+Корректность формулы \eqref{eq:withoutfullgradmovingaverage} относительно \eqref{eq:withoutfullgrad} показывается в доказательстве леммы~\ref{ngl3}.
+
+\subsection{SARAH без полного градиента}\label{subsection:sarahalgorithm}
+
+Алгоритм \textsc{SARAH} зарекомендовал себя как эффективный метод снижения дисперсии градиентных оценок, обладающий практическими преимуществами по сравнению с альтернативами. В данном разделе рассматривается модификация алгоритма, исключающая необходимость пересчёта полного градиента. Ниже представлена формальная постановка алгоритма.
+
+\begin{algorithm}[H]
+\caption{\textsc{No Full Grad SARAH}}\label{alg:sarah}
+\begin{algorithmic}[1]
+    \State \textbf{Вход:} Начальное приближение $x_0^0\in\mathbb{R}^d$; Начальные градиенты $\widetilde{v}_0^0 = 0^d, v_0 = 0^d$
+    \State \textbf{Параметр:} Шаг градиентного спуска $\gamma > 0$
+    \For {эпохи $s = 0, 1, 2, \ldots, S$}
+    \State Сэмплируется перестановка $\pi^1_s, \dots, \pi^{n}_s$  из $\overline{1, n}$ \Comment{по эвристике}
+    \State $v_s^0 = v_s$
+    \State $x_s^1 = x_s^0 - \gamma v_s^0$
+    \For {$t = 1, 2, \ldots, n$}
+    \State \label{algsarah:line8} $\widetilde{v}_s^{t+1} = \frac{t-1}{t} \widetilde{v}_s^{t} + \frac{1}{t} \nabla f_{\pi_s^t}(x_s^t)$
+    \State \label{algsarah:line9} $v_s^{t} = \frac{1}{n}\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) + v_s^{t-1}$
+    \State \label{algsarah:line10} $x_s^{t+1} = x_s^t - \gamma v_s^t$
+    \EndFor
+    \State $x_{s+1}^0 = x_s^{n+1}$
+    \State $\widetilde{v}_{s+1}^1 = 0$
+    \State $v_{s+1} = \widetilde{v}_s^{n+1}$
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Модификация алгоритма позволяет отказаться от пересчёта полного градиента, используя идею скользящего усреднения стохастических градиентов. Обновление в строке~\ref{algsarah:line8} учитывает изменение индексации: усреднение начинается с $t=1$, а не с $t=0$, что позволяет избежать появления лишнего множителя \(\frac{1}{n+1}\) в оценках.
+
+\subsubsection{Невыпуклая постановка}\label{subsection:sarahnonconvex}
+
+Анализ проводится аналогично предыдущему разделу. Вначале доказывается оценка изменения градиента на одной эпохе:
+
+\begin{lemma}\label{l1:sarahmain}
+    Пусть выполнены предположения \ref{ass:smoothness}, \ref{ass:strongconvex}, \ref{ass:nonconvex}. Тогда для алгоритма \ref{alg:sarah} справедлива оценка:
+    \[
+    \left\| \nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \leqslant 2\|\nabla f(x_{s}^0) - v_s \|^2 + \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t - x_s^{t-1}\|^2.
+    \]
+\end{lemma}
+
+Полученное выражение содержит два слагаемых: первое отвечает за точность аппроксимации полного градиента, второе — за накопленную ошибку, возникающую при отклонении траектории оптимизации от начальной точки. Далее доказывается следующая лемма:
+
+\begin{lemma}\label{l2:sarahmain}
+    Пусть выполнены предположения \ref{ass:smoothness}, \ref{ass:strongconvex}, \ref{ass:nonconvex} и шаг $\gamma \leqslant \frac{1}{3L}$. Тогда для алгоритма \ref{alg:sarah} справедливо:
+    \[
+    \left\| \nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \leqslant 9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2.
+    \]
+\end{lemma}
+
+На основании этих лемм формулируется основная теорема:
+
+\begin{theorem}\label{th1:sarahmain}
+   Пусть выполнены предположения \ref{ass:smoothness}, \ref{ass:nonconvex}. Тогда алгоритм \ref{alg:sarah} при шаге $\gamma\leqslant\frac{1}{20L(n+1)}$ достигает $\varepsilon$-точности, определяемой как $\varepsilon^2 = \frac{1}{S}\sum\limits_{s=1}^{S} \|\nabla f(x_s^0)\|^2$, за $\mathcal{O} \left(\nicefrac{nL}{\varepsilon^2}\right)$ итераций и вызовов оракула.
+\end{theorem}
+
+\subsubsection{Сильно выпуклая постановка}\label{subsection:sarahstringlyconvex}
+
+Переход к сильно выпуклой постановке осуществляется с использованием условия Поляка-Ложасье (см. Приложение~\ref{sec:basicineq}).
+
+\begin{theorem}\label{th2:sarahmain}
+    Пусть выполнены предположения \ref{ass:smoothness}, \ref{ass:strongconvex}. Тогда алгоритм \ref{alg:sarah} при шаге $\gamma\leqslant\frac{1}{20L(n+1)}$ достигает $\varepsilon$-точности, определяемой как $\varepsilon = f(x_{S+1}^0)-f(x^*)$, за $\mathcal{O} \left(\nicefrac{nL}{\mu}\log \nicefrac{1}{\varepsilon}\right)$ итераций и вызовов оракула.
+\end{theorem}
