@@ -23,17 +23,4 @@
 Abstract
 ========
 
-Purus sit amet luctus venenatis lectus magna fringilla. Condimentum id venenatis a condimentum vitae sapien. Auctor neque vitae tempus quam pellentesque nec nam aliquam. Eget egestas purus viverra accumsan in. Nam aliquam sem et tortor. Donec et odio pellentesque diam volutpat commodo. Odio pellentesque diam volutpat commodo sed egestas. Sit amet dictum sit amet justo. Pellentesque sit amet porttitor eget. Imperdiet sed euismod nisi porta lorem mollis aliquam ut. Quis varius quam quisque id diam vel quam elementum. Ornare lectus sit amet est placerat in. Vulputate dignissim suspendisse in est ante. Elit sed vulputate mi sit amet mauris. Egestas sed tempus urna et pharetra pharetra. Viverra tellus in hac habitasse platea dictumst vestibulum rhoncus.
-
-Research publications
-===============================
-1. 
-
-Presentations at conferences on the topic of research
-================================================
-1. 
-
-Software modules developed as part of the study
-======================================================
-1. A python package *mylib* with all implementation `here <https://github.com/intsystems/ProjectTemplate/tree/master/src>`_.
-2. A code with all experiment visualisation `here <https://github.comintsystems/ProjectTemplate/blob/master/code/main.ipynb>`_. Can use `colab <http://colab.research.google.com/github/intsystems/ProjectTemplate/blob/master/code/main.ipynb>`_.
+В современном мире машинное обучение невозможно представить без использования больших обучающих выборок и моделей. Это обусловило широкое применение стохастических методов обучения, таких как SGD. Несмотря на простоту, SGD обладает слабыми теоретическими гарантиями сходимости, связанными с неубывающей дисперсией. Данная проблема может быть частично устранена с помощью модификаций, таких как SARAH. Однако эти методы требуют периодического вычисления полного градиента, что может быть затратным по времени. В данной работе были рассмотрены варианты алгоритмов с уменьшением дисперсии, не предполагающие необходимость вычисления полного градиента. Для повышения эффективности по памяти и исключения этих вычислений были использованы два ключевых подхода: эвристика перемешивания и идея, лежащая в основе методов SAG/SAGA. В результате были улучшены существующие оценки для алгоритмов с уменьшением дисперсии без вычисления полного градиента. В случае невыпуклой целевой функции полученная оценка совпадает с классическими методами на основе перемешивания, а для сильно выпуклой задачи достигается улучшение. Проведён всесторонний теоретический анализ, а также представлены масштабные экспериментальные результаты, подтверждающие эффективность и практическую применимость предложенных методов в задачах обучения на больших данных.
