@@ -3,13 +3,585 @@
 \addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
 
 \section{Основные неравенства}\label{sec:basicineq}
-В этом разделе приводятся неравенства, используемые в дальнейшем. Пусть функция $f$ удовлетворяет Предположению~\ref{ass:smoothness}, а функция $g$~---  Предположению~\ref{ass:strongconvex}. Тогда для любых векторов $x, y, \{x_i\}\in\mathbb{R}^d$ и положительных скаляров $\alpha, \beta$ выполняются следующие неравенства:
+В данном разделе формулируются неравенства, использующиеся в дальнейших оценках. Пусть функция \(f\) удовлетворяет условию \(L\)-гладкости (см. Предположение~\ref{ass:smoothness}), а функция \(g\) — условию \(\mu\)-сильной выпуклости (см. Предположение~\ref{ass:strongconvex}). Тогда для любых векторов \(x, y, \{x_i\} \subset \mathbb{R}^d\) и положительных скаляров \(\alpha, \beta > 0\) справедливы следующие утверждения.
 \begin{align}
-\label{ineq3} \tag{Скалярное} 2\langle x, y \rangle & \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2, \\
-\label{ineq:norm} \tag{Норма} 2\langle x, y \rangle & = \|x + y\|^2 - \|x\|^2 - \|y\|^2, \\
-\label{ineq:square} \tag{Квадратичное} \|x + y\|^2 & \leqslant (1 + \beta)\|x\|^2 + \left(1 + \frac{1}{\beta}\right)\|y\|^2, \\
-\label{ineq4} \tag{Липшицево} f(x) & \leqslant f(y) + \langle \nabla f(y), x-y \rangle + \frac{L}{2} \|x-y\|^2,\\
-\label{ineq1} \tag{Коши–Буняковский}  \left\|\sum_{i=1}^{n} x_i\right\|^2 & \leqslant  n \sum_{i=1}^{n} \|x_i\|^2, \\
-\label{PL} \tag{PL-условие}  g(x) - \inf g  &\leqslant \frac{1}{2\mu} \|\nabla g(x)\|^2.
+\label{ineq3} \tag{Scalar} 2\langle x, y \rangle & \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2, \\
+\label{ineq:norm} \tag{Norm} 2\langle x, y \rangle & = \|x + y\|^2 - \|x\|^2 - \|y\|^2, \\
+\label{ineq:square} \tag{Quad} \|x + y\|^2 & \leqslant (1 + \beta)\|x\|^2 + \left(1 + \frac{1}{\beta}\right)\|y\|^2, \\
+\label{ineq4} \tag{Lip} f(x) & \leqslant f(y) + \langle \nabla f(y), x-y \rangle + \frac{L}{2} \|x-y\|^2,\\
+\label{ineq1} \tag{CS}  \left\|\sum_{i=1}^{n} x_i\right\|^2 & \leqslant  n \sum_{i=1}^{n} \|x_i\|^2, \\
+\label{PL} \tag{PL}  g(x) - \inf g  &\leqslant \frac{1}{2\mu} \|\nabla g(x)\|^2.
 \end{align}
-Неравенство \eqref{ineq4} получено в книге~\citep{nesterov2018lectures}, Теорема 2.1.5.
+\begin{lemma}[Неравенство для скалярного произведения]\label{lem:scalar}
+Для любых \(x, y \in \mathbb{R}^d\) и \(\alpha > 0\) выполнено:
+\[
+2\langle x, y \rangle \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2. \tag{\ref{ineq3}}
+\]
+\end{lemma}
+\begin{proof}
+Рассмотрим скалярное произведение \(\langle x, y \rangle\). В силу неравенства Коши–Буняковского имеем:
+\[
+|\langle x, y \rangle| \leqslant \|x\| \cdot \|y\|.
+\]
+При этом для любых \(a, b \in \mathbb{R}_{\geq 0}\) и \(\alpha > 0\) справедливо неравенство между средним арифметическим и средним геометрическим:
+\[
+2ab = 2 \sqrt{\frac{a^2}{\alpha} \cdot \alpha b^2} \leqslant \frac{a^2}{\alpha} + \alpha b^2.
+\]
+
+Применяя это неравенство к \(a = \|x\|\), \(b = \|y\|\), получаем:
+\[
+2\|x\| \cdot \|y\| \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2.
+\]
+
+Поскольку \(\langle x, y \rangle \leqslant \|x\| \cdot \|y\|\), заключаем:
+\[
+2\langle x, y \rangle \leqslant 2\|x\| \cdot \|y\| \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2.
+\]
+Таким образом, утверждение доказано.
+\end{proof}
+
+\begin{lemma}[Тождество параллелограмма]\label{lem:norm}
+Для любых \(x, y \in \mathbb{R}^d\) выполнено:
+\[
+2\langle x, y \rangle = \|x + y\|^2 - \|x\|^2 - \|y\|^2. \tag{\ref{ineq:norm}}
+\]
+\end{lemma}
+
+\begin{proof}
+Рассмотрим квадрат нормы суммы двух векторов:
+\[
+\|x + y\|^2 = \langle x + y, x + y \rangle.
+\]
+Путём раскрытия скобок получено:
+\[
+\langle x + y, x + y \rangle = \langle x, x \rangle + \langle x, y \rangle + \langle y, x \rangle + \langle y, y \rangle.
+\]
+Поскольку \(\langle x, y \rangle = \langle y, x \rangle\), это выражение упрощается до:
+\[
+\|x + y\|^2 = \|x\|^2 + 2\langle x, y \rangle + \|y\|^2.
+\]
+Перенося \(\|x\|^2 + \|y\|^2\) в левую часть, получаем утверждение леммы:
+\[
+2\langle x, y \rangle = \|x + y\|^2 - \|x\|^2 - \|y\|^2.
+\]
+\end{proof}
+
+
+\begin{lemma}[Квадратичное неравенство]\label{lem:quadratic}
+Для любых \(x, y \in \mathbb{R}^d\) и \(\beta > 0\) выполнено:
+\[
+\|x + y\|^2 \leqslant (1 + \beta)\|x\|^2 + \left(1 + \frac{1}{\beta}\right)\|y\|^2. \tag{\ref{ineq:square}}
+\]
+\end{lemma}
+
+\begin{proof}
+Рассмотрим выражение \(\|x + y\|^2\). Согласно тождеству леммы~\ref{lem:norm}, имеем:
+\[
+\|x + y\|^2 = \|x\|^2 + 2\langle x, y \rangle + \|y\|^2.
+\]
+
+Применим неравенство из леммы~\ref{lem:scalar} (при \(\alpha = \beta\)) к скалярному произведению:
+\[
+2\langle x, y \rangle \leqslant \frac{\|x\|^2}{\beta} + \beta \|y\|^2.
+\]
+
+Подставляя это в выражение для \(\|x + y\|^2\), получаем:
+\begin{align*}
+\|x + y\|^2 &\leqslant \|x\|^2 + \frac{\|x\|^2}{\beta} + \beta \|y\|^2 + \|y\|^2 \\
+&= \left(1 + \frac{1}{\beta}\right)\|x\|^2 + (1 + \beta)\|y\|^2.
+\end{align*}
+
+Переобозначив \(\beta \mapsto \frac{1}{\beta}\), получаем утверждение леммы:
+\[
+\|x + y\|^2 \leqslant (1 + \beta)\|x\|^2 + \left(1 + \frac{1}{\beta}\right)\|y\|^2.
+\]
+\end{proof}
+
+
+\begin{lemma}[Гладкость функции \(f\)]\label{lem:smoothness}
+Если функция \(f\) удовлетворяет условию \(L\)-гладкости, то для любых \(x, y \in \mathbb{R}^d\) выполнено:
+\[
+f(x) \leqslant f(y) + \langle \nabla f(y), x - y \rangle + \frac{L}{2} \|x - y\|^2. \tag{\ref{ineq4}}
+\]
+\end{lemma}
+
+\begin{proof}
+Пусть \(f : \mathbb{R}^d \to \mathbb{R}\) — дифференцируемая функция с \(L\)-липшицевым градиентом, то есть для любых \(u, v \in \mathbb{R}^d\) выполнено:
+\[
+\|\nabla f(u) - \nabla f(v)\| \leqslant L \|u - v\|.
+\]
+
+Рассмотрим вспомогательную функцию \(\varphi : [0, 1] \to \mathbb{R}\), заданную как:
+\[
+\varphi(t) = f(y + t(x - y)).
+\]
+Тогда \(\varphi(0) = f(y)\), \(\varphi(1) = f(x)\), и по формуле производной по цепному правилу:
+\[
+\varphi'(t) = \langle \nabla f(y + t(x - y)), x - y \rangle.
+\]
+
+Воспользуемся формулой Ньютона–Лейбница:
+\[
+f(x) - f(y) = \varphi(1) - \varphi(0) = \int_0^1 \varphi'(t) \, dt = \int_0^1 \langle \nabla f(y + t(x - y)), x - y \rangle \, dt.
+\]
+
+Поскольку \(\nabla f(y + t(x - y)) = \nabla f(y) + \left[\nabla f(y + t(x - y)) - \nabla f(y)\right]\), выражение под интегралом можно представить как:
+\[
+\langle \nabla f(y), x - y \rangle + \langle \nabla f(y + t(x - y)) - \nabla f(y), x - y \rangle.
+\]
+
+Следовательно:
+\begin{align*}
+f(x) - f(y) &= \langle \nabla f(y), x - y \rangle + \int_0^1 \langle \nabla f(y + t(x - y)) - \nabla f(y), x - y \rangle \, dt \\
+&\leqslant \langle \nabla f(y), x - y \rangle + \int_0^1 \|\nabla f(y + t(x - y)) - \nabla f(y)\| \cdot \|x - y\| \, dt \\
+&\leqslant \langle \nabla f(y), x - y \rangle + \int_0^1 L t \|x - y\|^2 \, dt \\
+&= \langle \nabla f(y), x - y \rangle + L \|x - y\|^2 \int_0^1 t \, dt \\
+&= \langle \nabla f(y), x - y \rangle + \frac{L}{2} \|x - y\|^2,
+\end{align*}
+что и доказывает утверждение.
+\end{proof}
+
+
+
+\begin{lemma}[Обобщённое неравенство Коши–Буняковского-Шварца]\label{lem:cb}
+Для любых \(x_1, \dots, x_n \in \mathbb{R}^d\) выполнено:
+\[
+\left\|\sum_{i=1}^{n} x_i\right\|^2 \leqslant  n \sum_{i=1}^{n} \|x_i\|^2. \tag{\ref{ineq1}}
+\]
+\end{lemma}
+
+\begin{proof}
+Обозначим \(S = \sum_{i=1}^{n} x_i\). Тогда
+\[
+\|S\|^2 = \left\langle \sum_{i=1}^{n} x_i,\; \sum_{j=1}^{n} x_j \right\rangle = \sum_{i=1}^{n} \sum_{j=1}^{n} \langle x_i, x_j \rangle.
+\]
+Применим неравенство Коши–Шварца для скалярного произведения:
+\[
+\langle x_i, x_j \rangle \leqslant \|x_i\| \cdot \|x_j\|.
+\]
+
+Следовательно:
+\[
+\|S\|^2 \leqslant\sum_{i=1}^{n} \sum_{j=1}^{n} \|x_i\| \cdot \|x_j\|.
+\]
+
+Рассмотрим полную сумму:
+\[
+\sum_{i=1}^{n} \sum_{j=1}^{n} \|x_i\| \cdot \|x_j\| = \left(\sum_{i=1}^{n} \|x_i\|\right)^2 \leqslant n \sum_{i=1}^{n} \|x_i\|^2,
+\]
+где использовано неравенство между средним арифметическим и средним квадратичным применительно к вектору из норм \(\|x_1\|, \dots, \|x_n\|\).
+
+Так как
+\[
+\|S\|^2 \leqslant \sum_{i=1}^{n} \sum_{j=1}^{n} \|x_i\| \cdot \|x_j\| \leqslant n \sum_{i=1}^{n} \|x_i\|^2,
+\]
+утверждение доказано.
+\end{proof}
+
+
+\begin{lemma}[PL-условие для \(g\)]\label{lem:pl}
+Пусть функция \(g : \mathbb{R}^d \to \mathbb{R}\) \(\mu\)-сильно выпукла с константой \(\mu > 0\) и дифференцируема. Тогда для любых \(x \in \mathbb{R}^d\) выполнено:
+\[
+g(x) - \inf g \leqslant \frac{1}{2\mu} \|\nabla g(x)\|^2. \tag{\ref{PL}}
+\]
+\end{lemma}
+
+\begin{proof}
+Обозначим через \(x^* \in \arg\min g\) точку глобального минимума функции \(g\), тогда \(\nabla g(x^*) = 0\) и \(g(x^*) = \inf g\). Из определения \(\mu\)-сильной выпуклости следует, что для любых \(x \in \mathbb{R}^d\) выполнено:
+\[
+g(x^*) \geq g(x) + \langle \nabla g(x), x^* - x \rangle + \frac{\mu}{2} \|x^* - x\|^2.
+\]
+
+Преобразуем неравенство:
+\[
+g(x) - g(x^*) \leq \langle \nabla g(x), x - x^* \rangle - \frac{\mu}{2} \|x - x^*\|^2.
+\]
+
+Для оценки скалярного произведения применим неравенство \eqref{ineq3}:
+\[
+\langle \nabla g(x), x - x^* \rangle  \leq \frac{1}{2\mu} \|\nabla g(x)\|^2 + \frac{\mu}{2} \|x - x^*\|^2.
+\]
+
+Тогда:
+\[
+g(x) - g(x^*) \leq \left( \frac{1}{2\mu} \|\nabla g(x)\|^2 + \frac{\mu}{2} \|x - x^*\|^2 \right) - \frac{\mu}{2} \|x - x^*\|^2 = \frac{1}{2\mu} \|\nabla g(x)\|^2,
+\]
+что и доказывает утверждение.
+\end{proof}
+
+
+% В этом разделе приводятся неравенства, используемые в дальнейшем. Пусть функция $f$ удовлетворяет Предположению~\ref{ass:smoothness}, а функция $g$~---  Предположению~\ref{ass:strongconvex}. Тогда для любых векторов $x, y, \{x_i\}\in\mathbb{R}^d$ и положительных скаляров $\alpha, \beta$ выполняются следующие неравенства:
+% \begin{align}
+% \label{ineq3} \tag{Скалярное} 2\langle x, y \rangle & \leqslant \frac{\|x\|^2}{\alpha} + \alpha \|y\|^2, \\
+% \label{ineq:norm} \tag{Норма} 2\langle x, y \rangle & = \|x + y\|^2 - \|x\|^2 - \|y\|^2, \\
+% \label{ineq:square} \tag{Квадратичное} \|x + y\|^2 & \leqslant (1 + \beta)\|x\|^2 + \left(1 + \frac{1}{\beta}\right)\|y\|^2, \\
+% \label{ineq4} \tag{Липшицево} f(x) & \leqslant f(y) + \langle \nabla f(y), x-y \rangle + \frac{L}{2} \|x-y\|^2,\\
+% \label{ineq1} \tag{Коши–Буняковский}  \left\|\sum_{i=1}^{n} x_i\right\|^2 & \leqslant  n \sum_{i=1}^{n} \|x_i\|^2, \\
+% \label{PL} \tag{PL-условие}  g(x) - \inf g  &\leqslant \frac{1}{2\mu} \|\nabla g(x)\|^2.
+% \end{align}
+% Неравенство \eqref{ineq4} получено в книге~\citep{nesterov2018lectures}, Теорема 2.1.5.
+\section{Доказательства утверждений}
+Для удобства изложения кратко описывается алгоритм~\ref{alg:sarah}. В случае, когда рассматривается эпоха $s \neq 0$, правило обновления принимает следующий вид:
+\begin{align}
+\label{sarah:update}
+\begin{split}
+\begin{cases}
+    &\text{при } t = 0\text{:}\\
+    &\quad x_s^0 = x_{s-1}^{n},\\
+    &\quad v_s^0 = v_s = \frac{1}{n}\sum\limits_{t = 1}^n \nabla f_{\pi_{s-1}^t} (x_{s-1}^t),\\
+    &\quad x_s^1 = x_s^0 - \gamma v_s^0;\\
+    &\text{на последующих итерациях в пределах эпохи:}\\
+    &\quad v_s^t = v_s^{t-1} + \frac{1}{n} \left(\nabla f_{\pi_{s}^t} (x_s^t) - \nabla f_{\pi_{s}^t} (\omega_s)\right),\\
+    &\quad x_s^{t+1} = x_s^t - \gamma v_s^t.
+\end{cases}
+\end{split}
+\end{align}
+\subsection{Вспомогательные леммы}
+Сперва будет докзана лемма про подсчет оценки полного градиента через скользящее среднее. 
+\begin{lemma}[\textbf{Лемма \ref{lemma:movingaverage}}]\label{lemma:movingaverageproof}
+Формулы
+\begin{align} \label{eq:withoutfullgradpr}
+    &\textstyle{v_{s+1} = \frac{1}{n} \sum\limits_{t=1}^n \nabla f_{\pi_s^t}(x_s^t),}
+\end{align}
+где \(\pi_s^t\) — перестановка индексов после перемешивания в начале эпохи \(s\), и
+\begin{align}
+\label{eq:withoutfullgradmovingaveragepr}
+\begin{split}
+    \textstyle{\widetilde{v}_s^{0}} = 0, \quad \textstyle{\widetilde{v}_s^{t+1}} = \textstyle{\frac{t}{t+1} \widetilde{v}_s^{t} + \frac{1}{t+1} \nabla f_{\pi_s^t}(x_s^t), \quad v_{s+1} = \widetilde{v}_s^n.}
+\end{split}
+\end{align} 
+эквивалентны.
+\end{lemma}
+\begin{proof}
+Будет показано, что для любого \(t \in \{1, \dots, n\}\) выполняется представление:
+\[
+\widetilde{v}_s^{t} = \frac{1}{t} \sum_{i=1}^{t} \nabla f_{\pi_s^i}(x_s^i).
+\]
+
+\textbf{База индукции.} При \(t = 1\) с использованием инициализации \(\widetilde{v}_s^0 = 0\) из \eqref{eq:withoutfullgradmovingaveragepr} получено:
+\[
+\widetilde{v}_s^1 = \frac{0}{1} \cdot 0 + \frac{1}{1} \nabla f_{\pi_s^1}(x_s^1) = \nabla f_{\pi_s^1}(x_s^1),
+\]
+что совпадает с \(\frac{1}{1} \sum_{i=1}^{1} \nabla f_{\pi_s^i}(x_s^i)\).
+
+\textbf{Переход.} Пусть для некоторого \(t \geq 1\) выполнено:
+\[
+\widetilde{v}_s^t = \frac{1}{t} \sum_{i=1}^{t} \nabla f_{\pi_s^i}(x_s^i).
+\]
+Тогда, подставляя в формулу \eqref{eq:withoutfullgradmovingaveragepr}, получено:
+\begin{align*}
+\widetilde{v}_s^{t+1} &= \frac{t}{t+1} \widetilde{v}_s^t + \frac{1}{t+1} \nabla f_{\pi_s^{t+1}}(x_s^{t+1}) \\
+&= \frac{t}{t+1} \cdot \left( \frac{1}{t} \sum_{i=1}^{t} \nabla f_{\pi_s^i}(x_s^i) \right) + \frac{1}{t+1} \nabla f_{\pi_s^{t+1}}(x_s^{t+1}) \\
+&= \frac{1}{t+1} \sum_{i=1}^{t} \nabla f_{\pi_s^i}(x_s^i) + \frac{1}{t+1} \nabla f_{\pi_s^{t+1}}(x_s^{t+1}) \\
+&= \frac{1}{t+1} \sum_{i=1}^{t+1} \nabla f_{\pi_s^i}(x_s^i),
+\end{align*}
+что завершает индукционный переход.
+
+Следовательно, после \(n\) шагов рекурсии выполняется равенство:
+\[
+\widetilde{v}_s^n = \frac{1}{n} \sum_{i=1}^{n} \nabla f_{\pi_s^i}(x_s^i) = v_{s+1},
+\]
+что и доказывает эквивалентность выражений \eqref{eq:withoutfullgradpr} и \eqref{eq:withoutfullgradmovingaveragepr}.
+\end{proof}
+\subsection{Невыпуклый случай}
+\begin{lemma}\label{lemma4}
+Пусть выполняются Предположения~\ref{ass:smoothness} и~\ref{ass:nonconvex}. Если шаг градиентного спуска удовлетворяет условию $\gamma \leqslant \frac{1}{L(n+1)}$, то для алгоритма~\ref{alg:sarah} выполняется неравенство
+\begin{equation*}
+    f(x_{s+1}^0) \leqslant f(x_s^0) - \frac{\gamma(n+1)}{2}\|\nabla f(x_s^0)\|^2 + \frac{\gamma(n+1)}{2}\left\|\nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{i=0}^n v_s^i\right\|^2.
+\end{equation*}
+\begin{proof}
+На основе итерационной схемы алгоритма~\ref{alg:sarah}, заданной в~\eqref{sarah:update}, получаем:
+\begin{eqnarray*}
+    f(x_{s+1}^0) &=& f(x_s^0 - (x_s^0 - x_{s+1}^0)) \\
+    &\overset{\eqref{ineq4}}{\leqslant}& f(x_s^0) + \langle \nabla f(x_s^0), x_{s+1}^0 - x_s^0\rangle + \frac{L}{2}\|x_{s+1}^0 - x_s^0\|^2 \\
+    &=& f(x_s^0) - \gamma(n+1)\left\langle \nabla f(x_s^0), \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\rangle \\
+    &&\quad + \frac{\gamma^2(n+1)^2L}{2}\left\|\frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \\
+    &\overset{\eqref{ineq:norm}}{=}& f(x_s^0) - \frac{\gamma(n+1)}{2}\left[\|\nabla f(x_s^0)\|^2 + \left\|\frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \right.\\
+    &&\quad \left. - \left\|\nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \right] \\
+    &&\quad + \frac{\gamma^2(n+1)^2L}{2}\left\|\frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \\
+    &=& f(x_s^0) - \frac{\gamma(n+1)}{2}\left[\|\nabla f(x_s^0)\|^2 - \left\|\nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \right] \\
+    &&\quad - \frac{\gamma(n+1)}{2} \cdot \left(1 - \gamma(n+1)L\right)\left\|\frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2.
+\end{eqnarray*}
+
+Остаётся выбрать такой шаг \(\gamma\), чтобы выполнялось неравенство \[\frac{\gamma(n+1)}{2}\left(1 - \gamma(n+1)L\right) > 0.\] Оно соблюдается при условии \(\gamma \leqslant \frac{1}{L(n+1)}\), что делает последний член отрицательным и завершает доказательство леммы.
+\end{proof}
+\end{lemma}
+Теперь необходимо оценить последний член в результате леммы~\ref{lemma4}. Для этого доказывается следующая лемма.
+
+\begin{lemma}[\textbf{Лемма \ref{l1:sarahmain}}]\label{lemma5}
+Пусть выполняются Предположения~\ref{ass:smoothness} и~\ref{ass:nonconvex}. Тогда для алгоритма~\ref{alg:sarah} справедлива следующая оценка:
+\begin{align*}
+    \left\| \nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \leqslant 2\|\nabla f(x_{s}^0) - v_s \|^2 + \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t - x_s^{t-1}\|^2.
+\end{align*}
+
+\begin{proof}
+Будет показано, что
+\begin{equation}
+\label{l5:ineq1}
+    \sum\limits_{t=k}^n v_s^t = \frac{1}{n} \sum\limits_{t = k+1}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) + (n-k+1)v_s^k.
+\end{equation}
+Докажем это по индукции. При $k = n$ равенство очевидно. Предположим, что утверждение верно для некоторого $\widetilde{k} \geqslant 1$ и покажем, что оно верно для $k = \widetilde{k}-1$:
+\begin{align*}
+    \sum\limits_{t=\widetilde{k}-1}^n v_s^t &= v_s^{\widetilde{k}-1} + \sum\limits_{t=\widetilde{k}}^n v_s^t \\
+    &= v_s^{\widetilde{k}-1} + \frac{1}{n} \sum\limits_{t = \widetilde{k}+1}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) + (n-\widetilde{k}+1)v_s^{\widetilde{k}} \\
+    & \overset{(i)}{=} v_s^{\widetilde{k}-1} + \frac{1}{n} \sum\limits_{t = \widetilde{k}+1}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) \\
+    &\quad + (n-\widetilde{k}+1)\left(v_s^{\widetilde{k}-1} + \frac{1}{n} \left(\nabla f_{\pi_s^{\widetilde{k}}}(x_s^{\widetilde{k}}) - \nabla f_{\pi_s^{\widetilde{k}}}(x_s^{\widetilde{k}-1})\right)\right) \\
+    &= \frac{1}{n} \sum\limits_{t = \widetilde{k}}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) + (n-\widetilde{k}+2) v_s^{\widetilde{k}-1},
+\end{align*}
+где равенство (\textit{i}) следует из определения $v_s^t$ в~\eqref{sarah:update} при $\widetilde{k} \geqslant 1$. Индукционный переход доказан, следовательно, равенство~\eqref{l5:ineq1} выполняется.
+
+Подставляя $k = 0$ в~\eqref{l5:ineq1} и используя $v_s^0 = v_s$, получаем:
+\begin{align}
+\label{l5:ineq2}
+    \sum\limits_{t=0}^n v_s^t = \frac{1}{n} \sum\limits_{t = 1}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) + (n+1) v_s.
+\end{align}
+
+Оценим интересующий нас член:
+\begin{eqnarray*}
+    && \left\|\nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \\
+    &=& \frac{1}{(n+1)^2}\left\|(n+1)\nabla f(x_{s}^0) - \sum\limits_{t=0}^n v_s^t\right\|^2 \\
+    &\overset{\eqref{l5:ineq2}}{=}& \frac{1}{(n+1)^2}\Biggl\|(n+1)\nabla f(x_{s}^0) \\
+    && - \frac{1}{n} \sum\limits_{t = 1}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right) \\
+    && - (n+1)v_s\Biggr\|^2 \\
+    &\overset{\eqref{ineq1}}{\leqslant}& 2\|\nabla f(x_{s}^0) - v_s\|^2 \\
+    && + \frac{2}{(n+1)^2}\left\|\frac{1}{n} \sum\limits_{t = 1}^n (n-t+1)\left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right)\right\|^2 \\
+    &\overset{(i)}{\leqslant}& 2\|\nabla f(x_{s}^0) - v_s\|^2 \\
+    && + \frac{2}{(n+1)^2}\left\|\sum\limits_{t=1}^n \left(\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right)\right\|^2 \\
+    &\overset{\eqref{ineq1}}{\leqslant}& 2\|\nabla f(x_{s}^0) - v_s\|^2 + \frac{2}{n+1}\sum\limits_{t=1}^n\left\|\nabla f_{\pi_s^t}(x_s^t) - \nabla f_{\pi_s^t}(x_s^{t-1})\right\|^2 \\
+    &\overset{\text{Предп. \ref{ass:smoothness}}}{\leqslant}& 2\|\nabla f(x_{s}^0) - v_s\|^2 + \frac{2L^2}{n+1}\sum\limits_{t=1}^n\left\|x_s^t - x_s^{t-1}\right\|^2,
+\end{eqnarray*}
+где неравенство (\textit{i}) справедливо, поскольку $t \geqslant 1$ на всём диапазоне суммирования. Полученное неравенство завершает доказательство леммы.
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[\textbf{Лемма \ref{l2:sarahmain}}]\label{lemma6}
+Пусть выполняются Предположения~\ref{ass:smoothness} и~\ref{ass:nonconvex}. Если шаг градиентного спуска удовлетворяет ограничению $\gamma \leqslant \frac{1}{3L}$, то для алгоритма~\ref{alg:sarah} справедлива следующая оценка:
+\[
+\left\| \nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \leqslant 9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2.
+\]
+
+\begin{proof}
+Воспользуемся результатом леммы~\ref{l1:sarahmain}, согласно которому:
+\begin{equation}\label{l6:ineq1}
+    \left\| \nabla f(x_s^0) - \frac{1}{n+1} \sum\limits_{t=0}^n v_s^t\right\|^2 \leqslant 2\|\nabla f(x_s^0) - v_s \|^2 + \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t - x_s^{t-1}\|^2.
+\end{equation}
+
+В лемме \ref{lemma:movingaverageproof} показано, что \(v_s\) вычисляется как скользящее среднее стохастических градиентов на предыдущей эпохе:
+\begin{equation}\label{l6:ineq2}
+    v_s = \widetilde{v}_{s-1}^{n+1} = \frac{1}{n}\sum\limits_{t=1}^n \nabla f_{\pi_{s-1}^t}(x_{s-1}^t).
+\end{equation}
+
+Подставляя \eqref{l6:ineq2} в \eqref{l6:ineq1}, получаем:
+\begin{eqnarray*}
+    \left\| \nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 &\leqslant& 2\left\|\nabla f(x_s^0) - \frac{1}{n}\sum\limits_{t = 1}^n\nabla f_{\pi_{s-1}^t}(x_{s-1}^t) \right\|^2 \\
+    & & + \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t - x_s^{t-1}\|^2.
+    \end{eqnarray*}
+Затем, используя соотношение~\eqref{eq:mainproblem},
+    \begin{eqnarray}
+        \notag && \left\| \nabla f(x_s^0) - \frac{1}{n+1}\sum\limits_{t=0}^n v_s^t\right\|^2 \\ \notag &\leqslant& 2\left\|\frac{1}{n}\sum\limits_{t = 1}^n\left[\nabla f_{\pi_{s-1}^t}(x_s^0) - \nabla f_{\pi_{s-1}^t}(x_{s-1}^t) \right]\right\|^2 \\
+        \notag& &+  \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t - x_s^{t-1}\|^2 \\
+    \notag &\overset{\eqref{ineq1}, \text{Предп. \ref{ass:smoothness}}}{\leqslant}& \frac{2L^2}{n}\sum\limits_{t=1}^n\|x_{s-1}^t - x_s^0\|^2 + \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t -x_s^{t-1}\|^2 \\
+    \notag&\overset{\eqref{ineq:square}}{\leqslant}& \frac{4L^2}{n}\sum\limits_{t=1}^n\|x_{s-1}^t - x_{s-1}^0\|^2 + \frac{4L^2}{n}\sum\limits_{t=1}^n\|x_s^0 - x_{s-1}^0\|^2 \\
+    \label{l6:ineq3}& & + \frac{2L^2}{n+1}\sum\limits_{t=1}^n \|x_s^t - x_s^{t-1}\|^2.
+\end{eqnarray}
+Далее требуется оценить три слагаемых. Начнём с нормы \(\sum\limits_{t=1}^n\|x_s^t - x_s^{t-1}\|^2\).
+\begin{align}
+\label{l6:ineq4}
+    \sum\limits_{t=1}^n\|x_s^t - x_s^{t-1}\|^2 = \gamma^2\sum\limits_{t=1}^n\|v_s^{t-1}\|^2 = \gamma^2\sum\limits_{t=0}^{n-1}\|v_s^{t}\|^2.
+\end{align}
+Далее проводится оценка выражения \(\|v_{s}^t\|^2\). Для \(t \geqslant 1\) справедливо:
+\begin{eqnarray*}
+    \|v_{s}^t\|^2 &=& \left\|v_{s}^{t-1} + \frac{1}{n}\left(\nabla f_{\pi_{s}^t}(x_{s}^t) - \nabla f_{\pi_{s}^t}(x_{s}^{t-1})\right) \right\|^2 
+    \\ &\overset{\eqref{ineq:square}}{\leqslant}&  \left(1 + \frac{1}{\beta}\right)\|v_{s}^{t-1}\|^2 + \frac{(1 + \beta)L^2}{n^2}\|x_{s}^t - x_{s}^{t-1}\|^2  \\
+    &\overset{\eqref{ineq:square}}{\leqslant}& \left(1 + \frac{1}{\beta}\right)^2\|v_{s}^{t-2}\|^2 + \frac{1}{n^2}\left(1 + \frac{1}{\beta}\right)(1 + \beta)L^2\|x_{s}^{t-1} - x_{s}^{t-2}\|^2 \\
+    & & + \frac{1}{n^2}(1 + \beta)L^2\|x_{s}^t - x_{s}^{t-1}\|^2 \\
+    &\overset{\eqref{ineq:square}}{\leqslant}& \left(1 + \frac{1}{\beta}\right)^t\|v_{s}\|^2 + \frac{1}{n^2}(1 + \beta)L^2 \sum\limits_{k = 1}^t \left(1 + \frac{1}{\beta}\right)^{k-1}\|x_{s}^{t-k+1} - x_{s}^{t-k}\|^2 \\
+    &\underset{\beta = t}{\overset{\eqref{ineq:square}}{\leqslant}}& \left(1 + \frac{1}{t}\right)^t \|v_{s}\|^2 +\frac{1}{n^2} (1+t)\left(1 + \frac{1}{t}\right)^t L^2\sum\limits_{k = 1}^t\|x_{s}^k - x_{s}^{k-1}\|^2.
+\end{eqnarray*}
+Далее, используя свойство показательной функции \(\left(\left(1 + \frac{1}{t}\right)^t \leqslant e\right)\) и факт, что \(t \leqslant n-1\), а также неравенство~\eqref{l6:ineq4}, получаем важную оценку (для \(0 \leqslant t \leqslant n-1\), поскольку при \(t = 0\) выполняется \(\|v_s^t\|^2 = \|v_s\|^2\), и искомое неравенство становится тривиальным):
+\begin{align}
+\label{l6:ineq5}
+    \|v_{s}^t\|^2 & ~\leqslant e \|v_{s}\|^2 + \frac{e L^2}{n}\sum\limits_{k = 1}^t\|x_{s}^k - x_{s}^{k-1}\|^2.
+\end{align}
+Теперь подставим выражение из~\eqref{l6:ineq5} в~\eqref{l6:ineq4} и получим:
+\begin{align*}
+    \sum\limits_{t=1}^n\|x_s^t - x_s^{t-1}\|^2 & = \gamma^2\sum\limits_{t=0}^{n-1}\|v_s^{t}\|^2 \leqslant e\gamma^2 n \|v_s\|^2 + \frac{e\gamma^2 L^2}{n}\sum\limits_{t=0}^{n-1}\sum\limits_{k=1}^{t} \|x_{s}^k - x_{s}^{k-1}\|^2\\
+    & \leqslant e\gamma^2 n \|v_s\|^2 + e\gamma^2 L^2\sum\limits_{t=1}^{n-1}\|x_{s}^t - x_{s}^{t-1}\|^2\\
+    & \leqslant e\gamma^2 n \|v_s\|^2 + e\gamma^2 L^2\sum\limits_{t=1}^{n}\|x_{s}^t - x_{s}^{t-1}\|^2.
+\end{align*}
+Непосредственно раскрывая сумму \(\sum\limits_{t=1}^n\|x_s^t - x_s^{t-1}\|^2\), получаем требуемую оценку:
+\begin{align*}
+    \sum\limits_{t=1}^n\|x_s^t - x_s^{t-1}\|^2 \leqslant \frac{e\gamma^2 n \|v_s\|^2}{1 - e\gamma^2 L^2} \overset{e<3}{\leqslant}\frac{3\gamma^2 n \|v_s\|^2}{1 - 3\gamma^2L^2}.
+\end{align*}
+Для завершения данной части доказательства остаётся выбрать подходящее значение \(\gamma\). В лемме~\ref{lemma4} требуется выполнение условия \(\gamma \leqslant \frac{1}{L(n+1)}\). Там допускаются даже большие значения \(\gamma\). Проведём оценку полученного выражения при \(\gamma \leqslant \frac{1}{L(n+1)} \leqslant \frac{1}{3L}\). Ниже приводится окончательная оценка соответствующей нормы:
+\begin{align}
+\label{l6:ineq6}
+    \sum\limits_{t=1}^n\|x_s^t - x_s^{t-1}\|^2 \leqslant \frac{9}{2}\gamma^2 n\|v_s\|^2.
+\end{align}
+Продолжим оценивание неравенства~\eqref{l6:ineq3}, рассмотрев слагаемое \(\sum\limits_{t=1}^n \|x_{s-1}^t - x_{s-1}^0\|^2\).
+\begin{align}
+    \notag & \sum\limits_{t=1}^n \|x_{s-1}^t - x_{s-1}^0\|^2 = \gamma^2\sum\limits_{t=1}^n \left\|\sum\limits_{k = 0}^{t-1} v_{s-1}^k\right\|^2 
+    \\ &\overset{\eqref{ineq1}}{\leqslant} \gamma^2\sum\limits_{t=1}^n t \sum\limits_{k = 0}^{t-1} \|v_{s-1}^k\|^2 \leqslant \gamma^2 n^2 \sum\limits_{t = 0}^{n-1}  \|v_{s-1}^t\|^2.    \label{l6:ineq7}
+\end{align}
+Отметим, что ранее уже была получена оценка для \(\|v_s^t\|^2\) при \(0 \leqslant t \leqslant n - 1\), см.~\eqref{l6:ineq5}. Аналогичную оценку можно применить и к соответствующим величинам на эпохе \((s-1)\), после чего записывается:
+\begin{align}
+\label{l6:ineq8}
+    \|v_{s-1}^t\|^2 & ~\leqslant e \|v_{s-1}\|^2 + \frac{e L^2}{n}\sum\limits_{k = 1}^t\|x_{s-1}^k - x_{s-1}^{k-1}\|^2.
+\end{align}
+Теперь подставим выражение из~\eqref{l6:ineq8} в~\eqref{l6:ineq7}, чтобы получить:
+\begin{align}
+    \notag\sum\limits_{t=1}^n \|x_{s-1}^t - x_{s-1}^0\|^2 &\leqslant \gamma^2 n^2\sum\limits_{t=0}^{n-1} \left(e\|v_{s-1}\|^2 + \frac{e L^2}{n}\sum\limits_{k = 1}^t\|x_{s-1}^k - x_{s-1}^{k-1}\|^2\right)\\
+    \notag& \leqslant \gamma^2 n^3 e \|v_{s-1}\|^2 + e\gamma^2 L^2n\sum\limits_{t = 0}^{n-1}\sum\limits_{k = 1}^t\|x_{s-1}^k - x_{s-1}^{k-1}\|^2\\
+    \notag& \leqslant \gamma^2 n^3 e\|v_{s-1}\|^2 + e\gamma^2L^2 n^2 \sum\limits_{t = 1}^{n-1}\|x_{s-1}^t - x_{s-1}^{t-1}\|^2\\
+    \label{l6:ineq9}
+    & \leqslant \gamma^2 n^3 e\|v_{s-1}\|^2 + e\gamma^2L^2 n^2 \sum\limits_{t = 1}^{n}\|x_{s-1}^t - x_{s-1}^{t-1}\|^2.
+\end{align}
+Заметим, что слагаемое \(\sum\limits_{t = 1}^{n}\|x_{s}^t - x_{s}^{t-1}\|^2\) уже было оценено ранее, см.~\eqref{l6:ineq6}. Аналогичную оценку можно провести и для соответствующего слагаемого на эпохе \((s - 1)\), после чего записывается:
+\begin{align}
+\label{l6:ineq10}
+    \sum\limits_{t=1}^n\|x_{s-1}^t - x_{s-1}^{t-1}\|^2 \leqslant \frac{9}{2}\gamma^2 n\|v_{s-1}\|^2.
+\end{align}
+Подставляя выражение из~\eqref{l6:ineq10} в~\eqref{l6:ineq9}, получаем:
+\begin{align*}
+    \sum\limits_{t=1}^n \|x_{s-1}^t - x_{s-1}^0\|^2 \leqslant 3\gamma^2 n^3 \|v_{s-1}\|^2 + \frac{27}{2}\gamma^4L^2 n^3\|v_{s-1}\|^2.
+\end{align*}
+Используя выбранное ограничение \(\gamma \leqslant \frac{1}{3L}\),
+\begin{align}
+\label{l6:ineq11}
+    \sum\limits_{t=1}^n \|x_{s-1}^t - x_{s-1}^0\|^2 \leqslant 3\gamma^2 n^3 \|v_{s-1}\|^2 + \frac{3}{2}\gamma^2 n^3\|v_{s-1}\|^2 = \frac{9}{2}\gamma^2 n^3\|v_{s-1}\|^2.
+\end{align}
+Остаётся оценить слагаемое \(\sum\limits_{t=1}^n\|x_s^0 - x_{s-1}^0\|^2\). Получаемая оценка аналогична предыдущей:
+\begin{align*}            
+    \sum\limits_{t=1}^n \|x_s^0 - x_{s-1}^0\|^2  & = \gamma^2\sum\limits_{t=1}^n \left\|\sum\limits_{k = 0}^{n-1} v_{s-1}^{k-1}\right\|^2 \\ &\overset{\eqref{ineq:square}}{\leqslant} \gamma^2\sum\limits_{t=1}^n n \sum\limits_{k = 0}^{n-1} \|v_{s-1}^k\|^2 \leqslant \gamma^2 n^2 \sum\limits_{t = 0}^{n-1}  \|v_{s-1}^t\|^2. 
+\end{align*}
+Получается оценка, аналогичная~\eqref{l6:ineq7}. Действуя аналогично предыдущему случаю, получаем:
+\begin{align}
+\label{l6:ineq12}
+    \sum\limits_{t=1}^n \|x_{s}^0 - x_{s-1}^0\|^2 \leqslant \frac{9}{2}\gamma^2 n^3\|v_{s-1}\|^2.
+\end{align}
+Теперь можно подставить верхние оценки из~\eqref{l6:ineq6}, \eqref{l6:ineq11}, \eqref{l6:ineq12} в~\eqref{l6:ineq3} и получить:
+\begin{align*}
+    \left\| \nabla f(\omega_s) - \frac{1}{n+1} \sum\limits_{i=0}^n v_s^i\right\|^2 & \leqslant 18\gamma^2L^2n^2\|v_{s-1}\|^2 + 18\gamma^2L^2n^2\|v_{s-1}\|^2 + 9\gamma^2L^2\|v_s\|^2 \\
+    & = 9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2,
+\end{align*}
+что завершает доказательство.
+\end{proof}
+\end{lemma}
+
+\begin{theorem}[\textbf{Теорема \ref{th1:sarahmain}}]\label{theorem3}
+Пусть выполнены Предположения~\ref{ass:smoothness} и~\ref{ass:nonconvex}. Тогда для достижения \(\varepsilon\)-точности, где \(\varepsilon^2 = \frac{1}{S}\sum\limits_{s=1}^{S} \|\nabla f(x_s^0)\|^2\), алгоритму~\ref{alg:sarah} при шаге \(\gamma \leqslant \frac{1}{20L(n+1)}\) требуется
+\begin{equation*}
+    \mathcal{O} \left(\frac{nL}{\varepsilon^2}\right) ~~ \text{итераций и вызовов оракула.}
+\end{equation*}
+
+        \begin{proof}
+Объединяя результат леммы~\ref{lemma4} с результатом леммы~\ref{lemma6}, получаем:
+        \begin{align*}
+            f(x_{s+1}^0) &\leqslant f(x_s^0) - \frac{\gamma(n+1)}{2}\|\nabla f(x_s^0)\|^2 \\
+            & \quad + \frac{\gamma(n+1)}{2}\left(9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2\right).
+        \end{align*}
+Вычтем \(f(x^*)\) из обеих частей неравенства:
+
+        \begin{align*}
+            f(x_{s+1}^0) - f(x^*) &\leqslant f(x_s^0) - f(x^*) - \frac{\gamma(n+1)}{2}\|\nabla f(x_s^0)\|^2 \\
+            & \quad + \frac{\gamma(n+1)}{2}\left(9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2\right)\\
+            & = f(x_s^0) - f(x^*) - \frac{\gamma(n+1)}{4}\|\nabla f(x_s^0)\|^2 \\
+            & \quad + \frac{\gamma(n+1)}{2}\left(9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2\right) \\
+            & \quad - \frac{\gamma(n+1)}{4}\|\nabla f(x_s^0)\|^2.
+            \end{align*}
+Затем, преобразуя последнее слагаемое с использованием неравенства~\eqref{ineq:square} при \(\beta = 1\), получаем:
+
+        \begin{align*}
+            f(x_{s+1}^0) - f(x^*) &\leqslant f(x_s^0) - f(x^*) - \frac{\gamma(n+1)}{4}\|\nabla f(x_s^0)\|^2 \\
+           & \quad  + \frac{\gamma(n+1)}{2}\left(9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2\right) \\
+            & \quad- \frac{\gamma(n+1)}{8}\|v_s\|^2 + \frac{\gamma(n+1)}{4}\|v_s - \nabla f(x_s^0)\|^2.
+            \end{align*}
+Применяя лемму~\ref{lemma6} к выражению \(\|v_s - \nabla f(x_s^0)\|^2\) (в частности, используя оценки \(\frac{4L^2}{n} \cdot \eqref{l6:ineq11}\) и \(\frac{4L^2}{n} \cdot \eqref{l6:ineq12}\)),
+        \begin{align*}
+            f(x_{s+1}^0) - f(x^*) &\leqslant f(x_s^0) - f(x^*) - \frac{\gamma(n+1)}{4}\|\nabla f(x_s^0)\|^2 \\
+            & \quad + \frac{\gamma(n+1)}{2}\left(9\gamma^2L^2\|v_{s}\|^2 + 36\gamma^2L^2n^2\|v_{s-1}\|^2\right) \\
+            & \quad- \frac{\gamma(n+1)}{8}\|v_s\|^2 + \frac{\gamma(n+1)}{4}\cdot 36\gamma^2L^2n^2\|v_{s-1}\|^2.
+        \end{align*}
+Объединяя подобные слагаемые,
+        \begin{align}
+            \notag &f(x_{s+1}^0) - f(x^*) + \frac{\gamma(n+1)}{4}\|\nabla f(x_s^0)\|^2 \\ \notag &\leqslant f(x_s^0) - f(x^*) - \frac{\gamma(n+1)}{8}\left(1 - 36 \gamma^2L^2\right)\|v_s\|^2 \\ 
+            \label{t3:ineq1}& \quad + \gamma(n+1)\cdot 27\gamma^2L^2n^2\|v_{s-1}\|^2. 
+        \end{align}
+Используя условие \(\gamma \leqslant \frac{1}{20L(n+1)}\) (заметим, что это наименьший из всех ранее использованных шагов, поэтому все предыдущие переходы остаются корректными), получаем:
+        \begin{align*}
+            f(x_{s+1}^0) - f(x^*) &+ \frac{1}{10}\gamma(n+1)\|v_s\|^2 + \frac{\gamma(n+1)}{4}\|\nabla f(\omega_s)\|^2\\
+            &\leqslant f(x_s^0) - f(x^*) + \frac{1}{10}\gamma(n+1)\|v_{s-1}\|^2.
+        \end{align*}
+Обозначив \(\Delta_{s} = f(x_{s+1}^0) - f(x^*) + \frac{1}{10}\gamma(n+1)\|v_{s}\|^2\), получаем:
+        \begin{equation*}
+            \frac{1}{S}\sum\limits_{s=1}^{S} \|\nabla f(x_s^0)\|^2 \leqslant \frac{4\left[\Delta_0 - \Delta_{S}\right]}{\gamma(n+1)S}.
+        \end{equation*}    
+В качестве критерия выбирается \(\varepsilon^2 = \frac{1}{S}\sum\limits_{s=1}^{S} \|\nabla f(x_s^0)\|^2\). Таким образом, для достижения \(\varepsilon\)-точности требуется \(\mathcal{O}\left(\frac{L}{\varepsilon^2}\right)\) эпох и \(\mathcal{O}\left(\frac{nL}{\varepsilon^2}\right)\) итераций. Кроме того, отмечается, что сложность по оракулу для рассматриваемого алгоритма также составляет \(\mathcal{O}\left(\frac{nL}{\varepsilon^2}\right)\), поскольку на каждой итерации вычисляется стохастический градиент в двух точках. Это завершает доказательство.
+\end{proof}
+\end{theorem}
+\subsection{Случай сильной выпуклости}
+
+\begin{theorem}[\textbf{Теорема \ref{th2:sarahmain}}]\label{theorem4}
+Пусть выполняются Предположения~\ref{ass:smoothness} и~\ref{ass:strongconvex}. Тогда алгоритм~\ref{alg:sarah} при шаге $\gamma \leqslant \frac{1}{20L(n+1)}$ достигает $\varepsilon$-точности по функционалу, то есть
+\[
+\varepsilon = f(x_{S+1}^0) - f(x^*),
+\]
+за
+\[
+\mathcal{O} \left(\frac{nL}{\mu}\log \frac{1}{\varepsilon}\right)
+\]
+итераций и вызовов стохастического оракула.
+\begin{proof}
+Согласно Предположению~\ref{ass:strongconvex}, функция $f$ является сильно выпуклой, а значит, условие Поляка-Лоясевича~\eqref{PL} выполняется автоматически. Тогда
+\begin{align*}
+    &f(x_{s+1}^0) - f(x^*) + \frac{\gamma\mu(n+1)}{2} \left( f(x_s^0) - f(x^*) \right)
+    \\ &\leqslant f(x_{s+1}^0) - f(x^*) + \frac{\gamma(n+1)}{4} \|\nabla f(x_s^0)\|^2.
+\end{align*}
+
+Используя неравенство~\eqref{t3:ineq1}, получаем:
+\begin{align*}
+    f(x_{s+1}^0) - f(x^*) + \frac{\gamma\mu(n+1)}{2} \left( f(x_s^0) - f(x^*) \right)
+    &\leqslant f(x_s^0) - f(x^*) \\
+    &\quad - \frac{\gamma(n+1)}{8} \left(1 - 36\gamma^2 L^2 \right) \|v_s\|^2 \\
+    &\quad + 27\gamma^3(n+1)L^2 n^2 \|v_{s-1}\|^2.
+\end{align*}
+
+При $\gamma \leqslant \frac{1}{20L(n+1)}$ и $n \geqslant 2$, имеем:
+\begin{align*}
+    f(x_{s+1}^0) - f(x^*) + \frac{1}{10} \gamma(n+1) \|v_s\|^2
+    &\leqslant \left(1 - \frac{\gamma\mu(n+1)}{2}\right) \left(f(x_s^0) - f(x^*)\right) \\
+    &\quad + \frac{1}{10} \gamma(n+1) \left(1 - \frac{\gamma\mu(n+1)}{2}\right) \|v_{s-1}\|^2.
+\end{align*}
+
+Обозначив
+\[
+\Delta_s = f(x_{s+1}^0) - f(x^*) + \frac{1}{10} \gamma(n+1) \|v_s\|^2,
+\]
+получаем рекурсивное неравенство:
+\[
+\Delta_{s+1} \leqslant \left(1 - \frac{\gamma\mu(n+1)}{2} \right) \Delta_s.
+\]
+
+Переходя к рекурсии по всем эпохам:
+\[
+f(x_{S+1}^0) - f(x^*) \leqslant \Delta_S \leqslant \left(1 - \frac{\gamma\mu(n+1)}{2} \right)^{S+1} \Delta_0.
+\]
+
+Полагая $\varepsilon = f(x_{S+1}^0) - f(x^*)$, заключаем, что для достижения $\varepsilon$-точности достаточно 
+\[
+\mathcal{O}\left(\frac{L}{\mu} \log \frac{1}{\varepsilon} \right)
+\]
+эпох и
+\[
+\mathcal{O}\left( \frac{nL}{\mu} \log \frac{1}{\varepsilon} \right)
+\]
+итераций.
+
+Кроме того, сложность по числу вызовов стохастического градиентного оракула также составляет 
+\[
+\mathcal{O}\left( \frac{nL}{\mu} \log \frac{1}{\varepsilon} \right),
+\]
+так как на каждой итерации вычисляется градиент в не более чем двух точках. Тем самым доказательство завершено.
+\end{proof}
+\end{theorem}
+

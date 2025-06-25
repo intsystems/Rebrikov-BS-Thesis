@@ -12,11 +12,11 @@
 
 \begin{figure}[H]
 \centering
-\begin{tabular}{cccc}
-\includegraphics[width=0.235\textwidth]{plots/sarah_10-train-loss_compressed.pdf} &
-\includegraphics[width=0.24\textwidth]{plots/sarah_10-test-loss_compressed.pdf} &
-\includegraphics[width=0.23\textwidth]{plots/sarah_10-train-accuracy_compressed.pdf} &
-\includegraphics[width=0.23\textwidth]{plots/sarah_10-test-accuracy_compressed.pdf}
+\begin{tabular}{cc}
+\includegraphics[width=0.45\textwidth]{plots/sarah_10-train-loss_compressed.pdf} &
+\includegraphics[width=0.45\textwidth]{plots/sarah_10-test-loss_compressed.pdf} \\
+\includegraphics[width=0.45\textwidth]{plots/sarah_10-train-accuracy_compressed.pdf} &
+\includegraphics[width=0.45\textwidth]{plots/sarah_10-test-accuracy_compressed.pdf} \\
 \end{tabular}
 \caption{Сходимость \textsc{No Full Grad SARAH} и классического \textsc{SARAH} на датасете CIFAR-10.}
 \label{fig:sarah_10}
@@ -53,10 +53,10 @@
 \toprule
 Метод & Точность ($\uparrow$) \\
 \midrule
-\textsc{SGD} & 76.545 \\
-\textsc{SARAH} & 75.961 \\
-\textsc{RR NFG-SARAH} (по \cite{beznosikov2023random}) & 76.186 \\
-\textsc{RR NFG-SARAH} (предложенный) & \textbf{77.875} \\
+\textsc{SGD} & 76.545\% \\
+\textsc{SARAH} & 75.961\% \\
+\textsc{RR NFG-SARAH} (по \cite{beznosikov2023random}) & 76.186\% \\
+\textsc{RR NFG-SARAH} (предложенный) & \textbf{77.875\%} \\
 \bottomrule
 \end{tabular}
 \end{table}
